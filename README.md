@@ -187,7 +187,7 @@ Script tersebut interaktif dan idempotent (aman dijalankan ulang). Isinya:
 > - `postgresql://hubify:<pass>@127.0.0.1:5432/hubify_mail` (syarat: `ports: 127.0.0.1:5432:5432` di-uncomment + redeploy), atau
 > - URL Database bawaan Coolify yang diexpose ke host.
 >
-> Tambah domain email baru → jalankan ulang script (atau edit `virtual_mailbox_domains` + `postfix reload`).
+> Tambah domain email baru → **cukup dari Admin Dashboard** (tambah → verifikasi DNS → aktifkan). Watcher cron menyamakan `virtual_mailbox_domains` dengan DB otomatis tiap 2 menit (cek: `tail /var/log/hubify-postfix-sync.log`). Script ini hanya perlu dijalankan ulang untuk ubah hostname/limit.
 
 ---
 
@@ -240,6 +240,7 @@ Set di provider domain (contoh untuk `hubify.store`):
 | `PUBLIC_RESERVATION_MAX_PER_IP` / `PUBLIC_RESERVATION_TTL_DAYS` | Tidak | `5` / `7` | Kuota & masa inbox terproteksi publik |
 | `INBOX_ACCESS_TOKEN_TTL` / `INBOX_UNLOCK_*` | Tidak | `15m` / `5` / `60000` | Token & rate-limit unlock inbox |
 | `TELEGRAM_BOT_TOKEN` / `TELEGRAM_OWNER_ID` / `TELEGRAM_CHANNEL_ID` | Tidak | kosong (mati) | Bot Telegram; jika diisi → `api` wajib 1 replica |
+| `POSTFIX_SYNC_MODE` | Tidak | `external` | `external` = aktivasi domain di admin langsung sukses; sync Postfix host via watcher cron. Jangan `true`-kan `POSTFIX_SYNC_ENABLED` di Coolify (sudo tidak tersedia di container) |
 
 ---
 

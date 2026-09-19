@@ -9,6 +9,8 @@
 #
 # PENTING:
 # - Isi semua ${VAR} via menu Environment di Coolify (jangan commit secret).
+# - POSTFIX_SYNC_MODE=external: aktivasi domain di admin langsung sukses;
+#   Postfix host disinkron otomatis oleh watcher cron (postfix/sync-domains-watcher.sh).
 # - Service api WAJIB 1 replica kalau TELEGRAM_BOT_TOKEN diisi
 #   (bot long-polling konflik 409 kalau >1 worker).
 # - Kalau kamu pakai Database bawaan Coolify (disarankan untuk production),
@@ -50,6 +52,7 @@ services:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_OWNER_ID: ${TELEGRAM_OWNER_ID:-}
       TELEGRAM_CHANNEL_ID: ${TELEGRAM_CHANNEL_ID:-}
+      POSTFIX_SYNC_MODE: ${POSTFIX_SYNC_MODE:-external}
     depends_on:
       db:
         condition: service_healthy

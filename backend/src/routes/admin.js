@@ -187,7 +187,11 @@ router.post('/domains/:id/verify', async (req, res) => {
         }
 
         const syncResult = await postfixSync.syncPostfix();
-        if (!syncResult.success || syncResult.skipped) {
+        // Mode 'external' (mis. Coolify hybrid): Postfix hidup di host dan
+        // disinkron otomatis oleh watcher cron, jadi aktivasi langsung sukses
+        // tanpa perlu sudo dari container.
+        const externalSync = syncResult.skipped && process.env.POSTFIX_SYNC_MODE === 'external';
+        if (!externalSync && (!syncResult.success || syncResult.skipped)) {
             const failedDomain = await domainService.markDomainSyncFailed(
                 id,
                 syncResult.error || 'Postfix sync is disabled'
@@ -203,7 +207,9 @@ router.post('/domains/:id/verify', async (req, res) => {
             success: true,
             data: activated,
             setup: domainService.getVerificationInstructions(verified),
-            message: 'Domain verified and activated for incoming email.',
+            message: externalSync
+                ? 'Domain verified and activated. Host Postfix syncs automatically (watcher).'
+                : 'Domain verified and activated for incoming email.',
         });
     } catch (error) {
         const status = ['TXT_NOT_FOUND', 'NO_VERIFICATION_TOKEN'].includes(error.code) ? 400
@@ -244,7 +250,9 @@ router.patch('/domains/:id', async (req, res) => {
         if (!updated) return res.status(409).json({ success: false, error: 'Domain is not ready to be activated' });
 
         const syncResult = await postfixSync.syncPostfix();
-        if (!syncResult.success || (is_active && syncResult.skipped)) {
+        // Lihat catatan mode 'external' di route verify di atas.
+        const externalSync = is_active && syncResult.skipped && process.env.POSTFIX_SYNC_MODE === 'external';
+        if (!externalSync && (!syncResult.success || (is_active && syncResult.skipped))) {
             const failedDomain = is_active
                 ? await domainService.markDomainSyncFailed(id, syncResult.error || 'Postfix sync is disabled')
                 : updated;
@@ -255,7 +263,11 @@ router.patch('/domains/:id', async (req, res) => {
             });
         }
 
-        res.json({ success: true, data: updated });
+        res.json({
+            success: true,
+            data: updated,
+            ...(externalSync ? { message: 'Domain state updated. Host Postfix syncs automatically (watcher).' } : {}),
+        });
     } catch (error) {
         console.error('Error updating domain:', error);
         res.status(500).json({

@@ -23,7 +23,7 @@ die()  { printf '\n\033[1;31mERROR:\033[0m %s\n' "$*" >&2; exit 1; }
 
 prompt() { local l="$1" d="${2:-}" v; if [ -n "$d" ]; then read -r -p "$l [$d]: " v; printf '%s' "${v:-$d}"; else read -r -p "$l: " v; printf '%s' "$v"; fi; }
 
-log "1/5 Instalasi paket (postfix, nodejs 20)..."
+log "1/6 Instalasi paket (postfix, nodejs 20)..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
 apt-get install -y curl git postgresql-client postfix
@@ -33,7 +33,7 @@ if ! command -v node >/dev/null 2>&1; then
 fi
 node --version
 
-log "2/5 Konfigurasi backend pipe di /opt/hubify-mail-backend..."
+log "2/6 Konfigurasi backend pipe di /opt/hubify-mail-backend..."
 BACKEND_DIR="/opt/hubify-mail-backend"
 mkdir -p "$BACKEND_DIR"
 # CATATAN: ganti REPO_URL di bawah dengan URL repo Coolify BARU kamu.
@@ -56,19 +56,22 @@ MAX_EMAIL_BYTES="$(prompt 'MAX_EMAIL_BYTES' '1048576')"
 MAIL_HOST="$(prompt 'Mail hostname (A record web/mail)' 'mail.hubify.store')"
 DOMAINS_CSV="$(prompt 'Daftar domain email (koma, cth: hubify.store)' 'hubify.store')"
 
-cat > "$BACKEND_DIR/.env" <<EOF
+# PENTING: email-handler.js membaca backend/.env (bukan root .env).
+cat > "$BACKEND_DIR/backend/.env" <<EOF
 # Dipakai HANYA oleh email-handler.js (Postfix pipe). Jangan taruh secret lain.
 DATABASE_URL=$DATABASE_URL
 MAX_EMAIL_BYTES=$MAX_EMAIL_BYTES
 NOTIFY_TIMEOUT_MS=3000
 EOF
-chmod 640 "$BACKEND_DIR/.env"
+# Salinan di root dipakai watcher cron (postfix/sync-domains-watcher.sh).
+cp "$BACKEND_DIR/backend/.env" "$BACKEND_DIR/.env"
+chmod 640 "$BACKEND_DIR/backend/.env" "$BACKEND_DIR/.env"
 # User postfix pipe = www-data (lihat master.cf di bawah). Kalau user lain, sesuaikan.
 id www-data >/dev/null 2>&1 || useradd -r -s /usr/sbin/nologin www-data || true
 chown -R www-data:www-data "$BACKEND_DIR" 2>/dev/null || chown -R root:root "$BACKEND_DIR"
 chmod 640 "$BACKEND_DIR/.env"
 
-log "3/5 Konfigurasi Postfix (main.cf + master.cf)..."
+log "3/6 Konfigurasi Postfix (main.cf + master.cf)..."
 # Backup sekali
 [ -f /etc/postfix/main.cf.bak.hubify ] || cp /etc/postfix/main.cf /etc/postfix/main.cf.bak.hubify
 [ -f /etc/postfix/master.cf.bak.hubify ] || cp /etc/postfix/master.cf /etc/postfix/master.cf.bak.hubify
@@ -103,14 +106,26 @@ postfix check
 systemctl enable --now postfix
 postfix reload
 
-log "4/5 Firewall: buka port 25..."
+log "4/6 Firewall: buka port 25..."
 if command -v ufw >/dev/null 2>&1; then
   ufw allow 25/tcp || true
   ufw allow 80/tcp || true
   ufw allow 443/tcp || true
 fi
 
-log "5/5 Tes koneksi DB dari host..."
+log "5/6 Pasang watcher sinkronisasi domain (cron tiap 2 menit)..."
+# Watcher menyamakan virtual_mailbox_domains dengan domain aktif di DB,
+# sehingga tambah domain cukup dari Admin Dashboard. Idempotent.
+WATCHER="$BACKEND_DIR/postfix/sync-domains-watcher.sh"
+if [ -f "$WATCHER" ]; then
+  chmod +x "$WATCHER"
+  (crontab -l 2>/dev/null | grep -v 'sync-domains-watcher.sh'; echo "*/2 * * * * /bin/bash $WATCHER >> /var/log/hubify-postfix-sync.log 2>&1") | crontab -
+  log "Watcher terpasang. Cek: crontab -l | grep watcher"
+else
+  warn "Watcher tidak ditemukan di $WATCHER (repo belum di-pull?). Tambah domain masih harus edit Postfix manual."
+fi
+
+log "6/6 Tes koneksi DB dari host..."
 if sudo -u www-data psql "$DATABASE_URL" -c "SELECT count(*) FROM domains;" 2>/dev/null \
    || psql "$DATABASE_URL" -c "SELECT count(*) FROM domains;"; then
   log "Koneksi DB OK + tabel domains ada."
