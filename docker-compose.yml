@@ -86,8 +86,8 @@ services:
     # baris ports di bawah (hanya localhost, bukan publik), lalu pakai
     # DATABASE_URL=postgresql://hubify:<pass>@127.0.0.1:5432/hubify_mail
     # di postfix/setup-postfix-host.sh. Lihat README bagian 5.
-     ports:
-       - "127.0.0.1:5432:5432"
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       # Fresh install: schema.sql sudah mencakup semua tabel.
