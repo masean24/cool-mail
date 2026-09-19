@@ -26,7 +26,7 @@ prompt() { local l="$1" d="${2:-}" v; if [ -n "$d" ]; then read -r -p "$l [$d]: 
 log "1/5 Instalasi paket (postfix, nodejs 20)..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
-apt-get install -y curl git postgresql-client
+apt-get install -y curl git postgresql-client postfix
 if ! command -v node >/dev/null 2>&1; then
   curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
   apt-get install -y nodejs
