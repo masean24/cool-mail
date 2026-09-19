@@ -74,7 +74,11 @@ log "3/5 Konfigurasi Postfix (main.cf + master.cf)..."
 [ -f /etc/postfix/master.cf.bak.hubify ] || cp /etc/postfix/master.cf /etc/postfix/master.cf.bak.hubify
 
 postconf -e "myhostname = $MAIL_HOST"
-postconf -e 'mydomain = $mydomain'
+# mydomain TIDAK boleh mereferensikan dirinya sendiri ($mydomain = $mydomain
+# = fatal macro nesting). Pakai domain email pertama sebagai identitas lokal.
+# (Server ini tidak pernah kirim email, jadi nilai ini hanya formalitas.)
+FIRST_DOMAIN="$(printf '%s' "$DOMAINS_CSV" | cut -d, -f1 | tr -d ' ')"
+postconf -e "mydomain = $FIRST_DOMAIN"
 postconf -e 'myorigin = $mydomain'
 postconf -e 'mydestination = localhost'
 # Domain virtual dipisah koma -> spasi untuk postfix
