@@ -1,0 +1,24 @@
+# Hubify Mail API — Coolify (Opsi A hybrid)
+# Backend Express. Cron cleanup jalan in-process (node-cron).
+# Telegram bot aman: hanya 1 replica (lihat docker-compose / setting Coolify).
+FROM node:20-slim AS base
+WORKDIR /app
+
+# curl = untuk healthcheck Coolify (/health)
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY backend/package.json backend/package-lock.json ./
+RUN npm ci --omit=dev
+
+COPY backend/src ./src
+COPY backend/scripts ./scripts
+# Init DB dilakukan via service db (mount ./sql), bukan di image api.
+
+ENV NODE_ENV=production
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD curl -fsS http://localhost:3000/health || exit 1
+
+CMD ["node", "src/index.js"]

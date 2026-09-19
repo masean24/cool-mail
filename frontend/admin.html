@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Hubify Store</title>
+    
+    <link rel="stylesheet" href="./css/modern.css">
+</head>
+
+<body>
+    <!-- Login View -->
+    <div class="login-container" id="login-view">
+        <div class="login-box card">
+            <div class="login-box__header">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <h1 class="login-box__title">Admin Login</h1>
+            </div>
+            <form class="login-box__form" id="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="input" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="input" id="password" required>
+                </div>
+                <button type="submit" class="btn btn--primary" style="width: 100%;">LOGIN</button>
+            </form>
+            <p style="text-align: center; margin-top: 1.25rem; font-size: 0.9rem;">
+                <a href="/" style="color: var(--text-secondary); text-decoration: none;">← Back to Inbox</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div class="hidden" id="dashboard-view">
+        <!-- Header -->
+        <nav class="navbar">
+            <div class="navbar__inner">
+                <a href="/" class="navbar__logo">
+                    <svg class="navbar__logo-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                      <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <span class="navbar__logo-text"><span>HUBIFY.</span>STORE</span> <small style="font-size: 0.5em; opacity: 0.7; margin-left: 0.25rem;">ADMIN</small>
+                </a>
+                <nav class="admin-nav">
+                    <a href="/" class="header__link" style="margin-right: 0.5rem;">Inbox</a>
+                    <button class="btn btn--icon" id="btn-refresh-stats" title="Refresh Statistik">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+                            <path d="M16 16h5v5"></path>
+                        </svg>
+                    </button>
+                    <button class="btn btn--error" id="btn-logout">Logout</button>
+                </nav>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Stats -->
+            <section class="admin-section">
+                <div class="admin-section__header">
+                    <h2 class="admin-section__title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10" />
+                            <line x1="12" y1="20" x2="12" y2="4" />
+                            <line x1="6" y1="20" x2="6" y2="14" />
+                        </svg>
+                        STATISTICS
+                    </h2>
+                </div>
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card card">
+                        <div class="stat-card__icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                        </div>
+                        <div class="stat-card__value" id="stat-today">-</div>
+                        <div class="stat-card__label">EMAILS TODAY</div>
+                    </div>
+                    <div class="stat-card card">
+                        <div class="stat-card__icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 12h-6l-2 3h-4l-2-3H2" />
+                                <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+                            </svg>
+                        </div>
+                        <div class="stat-card__value" id="stat-total">-</div>
+                        <div class="stat-card__label">TOTAL EMAILS</div>
+                    </div>
+                    <div class="stat-card card">
+                        <div class="stat-card__icon success">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        </div>
+                        <div class="stat-card__value" id="stat-inboxes">-</div>
+                        <div class="stat-card__label">ACTIVE INBOXES</div>
+                    </div>
+                    <div class="stat-card card">
+                        <div class="stat-card__icon error">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12,6 12,12 16,14" />
+                            </svg>
+                        </div>
+                        <div class="stat-card__value" id="stat-expired">-</div>
+                        <div class="stat-card__label">EXPIRED (PENDING)</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Domain Management -->
+            <section class="admin-section">
+                <div class="admin-section__header">
+                    <h2 class="admin-section__title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="2" y1="12" x2="22" y2="12" />
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                        </svg>
+                        DOMAINS
+                    </h2>
+                    <button class="btn btn--primary" id="btn-add-domain">+ Add Domain</button>
+                </div>
+                <div class="table-container">
+                    <table class="table--compact">
+                        <thead>
+                            <tr>
+                                <th>Domain</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="domains-table"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Protected Inbox Reservation -->
+            <section class="admin-section">
+                <div class="admin-section__header">
+                    <h2 class="admin-section__title">PROTECTED INBOX</h2>
+                </div>
+                <form id="reserve-inbox-form" style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1rem;">
+                    <input type="text" class="input" id="reserve-inbox-local" placeholder="username" pattern="[a-zA-Z0-9._-]+" required style="flex:1; min-width:150px;">
+                    <select class="select" id="reserve-inbox-domain" required style="flex:1; min-width:160px;"></select>
+                    <input type="password" class="input" id="reserve-inbox-password" placeholder="Password (min. 10 karakter)" minlength="10" required autocomplete="new-password" style="flex:1; min-width:200px;">
+                    <select class="select" id="reserve-inbox-expiry" style="min-width:150px;">
+                        <option value="">Permanent</option>
+                        <option value="7">7 days</option>
+                        <option value="30">30 days</option>
+                        <option value="90">90 days</option>
+                    </select>
+                    <button type="submit" class="btn btn--primary">Reserve</button>
+                    <label style="display:flex;align-items:center;gap:0.5rem;flex-basis:100%;font-size:0.9rem;color:var(--text-secondary);cursor:pointer;">
+                        <input type="checkbox" id="reserve-inbox-existing">
+                        Protect inbox yang sudah ada dan pertahankan seluruh pesan lamanya
+                    </label>
+                </form>
+                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.75rem;">Centang opsi protect existing hanya untuk mengambil alih inbox lama yang sah. Setelah dikunci, password tetap diperlukan untuk membaca email/OTP, termasuk oleh admin.</p>
+                <div class="reservation-stats" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:0.65rem; margin-bottom:0.9rem;">
+                    <div class="card" style="padding:0.8rem;"><strong id="reservation-stat-total">-</strong><small style="display:block;color:var(--text-secondary);">Total</small></div>
+                    <div class="card" style="padding:0.8rem;"><strong id="reservation-stat-active">-</strong><small style="display:block;color:var(--text-secondary);">Active</small></div>
+                    <div class="card" style="padding:0.8rem;"><strong id="reservation-stat-public">-</strong><small style="display:block;color:var(--text-secondary);">Public-created</small></div>
+                    <div class="card" style="padding:0.8rem;"><strong id="reservation-stat-failed">-</strong><small style="display:block;color:var(--text-secondary);">Failed unlocks / 24h</small></div>
+                </div>
+                <div style="display:flex; gap:0.65rem; flex-wrap:wrap; margin-bottom:0.75rem;">
+                    <input type="search" class="input" id="reservations-search" placeholder="Search protected email..." style="flex:2;min-width:190px;">
+                    <select class="select" id="reservations-status" style="min-width:130px;">
+                        <option value="">All status</option><option value="active">Active</option><option value="disabled">Disabled</option><option value="expired">Expired</option>
+                    </select>
+                    <select class="select" id="reservations-source" style="min-width:130px;">
+                        <option value="">All sources</option><option value="public">Public</option><option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="table-container">
+                    <table class="table--compact">
+                        <thead><tr><th>Email</th><th>Source</th><th>Status</th><th>Emails</th><th>Expires</th><th>Last activity</th><th>Actions</th></tr></thead>
+                        <tbody id="reservations-table"></tbody>
+                    </table>
+                </div>
+                <details style="margin-top:1rem;">
+                    <summary style="cursor:pointer;font-weight:700;">Recent reservation audit</summary>
+                    <div class="table-container" style="margin-top:0.65rem;">
+                        <table class="table--compact">
+                            <thead><tr><th>Time</th><th>Email</th><th>Action</th><th>Actor</th></tr></thead>
+                            <tbody id="reservation-audit-table"></tbody>
+                        </table>
+                    </div>
+                </details>
+            </section>
+
+            <!-- Names Management -->
+            <section class="admin-section">
+                <div class="admin-section__header">
+                    <h2 class="admin-section__title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        NAMES <span id="names-count" style="font-weight: 500; font-size: 0.85rem; color: var(--text-secondary); margin-left: 0.25rem;"></span>
+                    </h2>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn--error" id="btn-delete-all-names">🗑 Delete All</button>
+                        <button class="btn" id="btn-bulk-add">📁 Bulk Add</button>
+                        <button class="btn btn--primary" id="btn-add-name">+ Add Name</button>
+                    </div>
+                </div>
+
+                <!-- Search and Filter -->
+                <div style="display: flex; gap: 0.75rem; margin-bottom: 0.5rem; flex-wrap: wrap; width: 100%;">
+                    <input type="text" class="input" id="names-search" placeholder="Search names..." style="flex: 2; min-width: 180px; padding: 0.75rem 1rem; font-size: 0.95rem;">
+                    <select class="select" id="names-filter-gender" style="flex: 1; min-width: 140px; padding: 0.75rem 2rem 0.75rem 1rem; font-size: 0.95rem;">
+                        <option value="">All Genders</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="neutral">Neutral</option>
+                    </select>
+                    <select class="select" id="names-filter-status" style="flex: 1; min-width: 140px; padding: 0.75rem 2rem 0.75rem 1rem; font-size: 0.95rem;">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <!-- Compact Grid -->
+                <div class="names-grid" id="names-grid"></div>
+            </section>
+
+            <!-- Cleanup -->
+            <section class="card">
+                <div class="admin-section__header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0.75rem;">
+                    <h2 class="admin-section__title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3,6 5,6 21,6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                        CLEANUP
+                    </h2>
+                    <button class="btn btn--primary" id="btn-cleanup">Run Cleanup Now</button>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Cleanup automatically runs every hour. Use this button to trigger manual cleanup.</p>
+            </section>
+
+            <!-- Recent Emails -->
+            <section class="admin-section">
+                <div class="admin-section__header">
+                    <h2 class="admin-section__title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                        RECENT EMAILS
+                    </h2>
+                </div>
+                <div class="table-container">
+                    <table class="table--compact">
+                        <thead>
+                            <tr>
+                                <th>To</th>
+                                <th>From</th>
+                                <th>Subject</th>
+                                <th>Received</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-emails-table"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Domain Modal -->
+    <div class="modal" id="domain-modal">
+        <div class="modal__content" style="max-width: 440px;">
+            <div class="modal__header">
+                <h3 class="modal__title">Add New Domain</h3>
+                <button class="modal__close" id="domain-modal-close">✕</button>
+            </div>
+            <div class="modal__body" style="background-color: var(--card-bg); color: var(--text-primary);">
+                <form id="add-domain-form">
+                    <div class="form-group">
+                        <label for="new-domain">Domain Name</label>
+                        <input type="text" class="input" id="new-domain" placeholder="example.com" required style="font-size: 0.95rem; padding: 0.75rem 1rem;">
+                    </div>
+
+                    <!-- DNS Setup Guide -->
+                    <div class="info-banner" style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; margin-bottom: 1.25rem; font-size: 0.85rem;">
+                        <div style="font-weight: 700; display: flex; align-items: center; gap: 0.4rem; color: var(--info-text);">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            DNS Setup (di domain provider Anda)
+                        </div>
+                        <table style="width: 100%; border-collapse: collapse; font-family: monospace; font-size: 0.75rem; color: var(--text-primary); margin-top: 0.25rem;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--border-color); text-align: left;">
+                                    <th style="padding: 4px;">Type</th>
+                                    <th style="padding: 4px;">Name</th>
+                                    <th style="padding: 4px;">Value</th>
+                                    <th style="padding: 4px;">Prio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 4px;"><span style="background: var(--primary); color: #fff; padding: 1px 4px; border-radius: 3px;">MX</span></td>
+                                    <td style="padding: 4px;">@</td>
+                                    <td style="padding: 4px; font-weight: 600; color: var(--success-text);">mail.hubify.store</td>
+                                    <td style="padding: 4px;">10</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="margin-top: 0.25rem; opacity: 0.7; font-size: 0.75rem;">⏱ DNS propagasi biasanya 1–24 jam setelah di-set.</p>
+                    </div>
+
+                    <button type="submit" class="btn btn--primary" style="width: 100%;">Add Domain</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Domain verification guide shown after a pending domain is created. -->
+    <div class="modal" id="domain-setup-modal">
+        <div class="modal__content" style="max-width: 560px;">
+            <div class="modal__header">
+                <h3 class="modal__title">Connect Your Domain</h3>
+                <button class="modal__close" id="domain-setup-modal-close">×</button>
+            </div>
+            <div class="modal__body" style="background-color: var(--card-bg); color: var(--text-primary);">
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">Tambahkan record berikut di DNS provider Anda. Setelah record TXT terdeteksi, klik <strong>Verify</strong> pada tabel domain.</p>
+                <div class="info-banner" style="display:block; margin-bottom: 0.8rem;">
+                    <strong>1. Verifikasi kepemilikan (TXT)</strong>
+                    <p style="margin-top:0.4rem; word-break:break-all;"><code id="domain-setup-txt"></code></p>
+                </div>
+                <div class="info-banner" style="display:block;">
+                    <strong>2. Terima email (MX)</strong>
+                    <p style="margin-top:0.4rem; word-break:break-all;"><code id="domain-setup-mx"></code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Name Modal -->
+    <div class="modal" id="name-modal">
+        <div class="modal__content" style="max-width: 400px;">
+            <div class="modal__header">
+                <h3 class="modal__title">Add New Name</h3>
+                <button class="modal__close" id="name-modal-close">✕</button>
+            </div>
+            <div class="modal__body" style="background-color: var(--card-bg); color: var(--text-primary);">
+                <form id="add-name-form">
+                    <div class="form-group">
+                        <label for="new-name">Name</label>
+                        <input type="text" class="input" id="new-name" placeholder="john" required pattern="[a-zA-Z]+" style="font-size: 0.95rem; padding: 0.75rem 1rem;">
+                        <small style="opacity: 0.7; font-size: 0.75rem;">Letters only, will be lowercase</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-name-gender">Gender</label>
+                        <select class="select" id="new-name-gender" style="padding: 0.75rem 2rem 0.75rem 1rem; font-size: 0.95rem; width: 100%;">
+                            <option value="neutral">Neutral</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn--primary" style="width: 100%;">Add Name</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Add Names Modal -->
+    <div class="modal" id="bulk-modal">
+        <div class="modal__content" style="max-width: 500px;">
+            <div class="modal__header">
+                <h3 class="modal__title">Bulk Add Names</h3>
+                <button class="modal__close" id="bulk-modal-close">✕</button>
+            </div>
+            <div class="modal__body" style="background-color: var(--card-bg); color: var(--text-primary);">
+                <form id="bulk-add-form">
+                    <div class="form-group">
+                        <label>Upload File (.txt or .csv)</label>
+                        <input type="file" class="input" id="bulk-file" accept=".txt,.csv" style="padding: 0.5rem; font-size: 0.9rem;">
+                        <small style="opacity: 0.7; font-size: 0.75rem;">One name per line, or CSV format: name,gender</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Or paste names directly (one per line)</label>
+                        <textarea class="input" id="bulk-textarea" rows="5" placeholder="john&#10;sarah&#10;alex&#10;michael" style="font-size: 0.95rem; padding: 0.75rem 1rem;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="bulk-gender">Default Gender (for names without gender)</label>
+                        <select class="select" id="bulk-gender" style="padding: 0.75rem 2rem 0.75rem 1rem; font-size: 0.95rem; width: 100%;">
+                            <option value="neutral">Neutral</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn--primary" style="width: 100%;">Add All Names</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script type="module" src="./js/admin.js"></script>
+</body>
+
+</html>

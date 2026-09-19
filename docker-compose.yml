@@ -1,0 +1,104 @@
+# Hubify Mail — Coolify compose (Opsi A hybrid)
+# Cara pakai di Coolify: buat Project -> Service "Docker Compose", arahkan ke
+# repo baru ini, file: docker-compose.yml
+#
+# Arsitektur Opsi A:
+#   web (nginx, public) -> api:3000 -> db (postgres)
+#   Postfix TIDAK di Docker, jalan di HOST VPS (port 25) -> pipe ke DB yang sama.
+#   Lihat postfix/setup-postfix-host.sh
+#
+# PENTING:
+# - Isi semua ${VAR} via menu Environment di Coolify (jangan commit secret).
+# - Service api WAJIB 1 replica kalau TELEGRAM_BOT_TOKEN diisi
+#   (bot long-polling konflik 409 kalau >1 worker).
+# - Kalau kamu pakai Database bawaan Coolify (disarankan untuk production),
+#   hapus service `db` di bawah dan set DATABASE_URL ke connection string
+#   database Coolify tersebut.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: hubify-mail-api:latest
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      INBOX_ACCESS_JWT_SECRET: ${INBOX_ACCESS_JWT_SECRET:-}
+      INBOX_ACCESS_TOKEN_TTL: ${INBOX_ACCESS_TOKEN_TTL:-15m}
+      INBOX_UNLOCK_MAX_ATTEMPTS: ${INBOX_UNLOCK_MAX_ATTEMPTS:-5}
+      INBOX_UNLOCK_WINDOW_MS: ${INBOX_UNLOCK_WINDOW_MS:-60000}
+      PUBLIC_RESERVATION_MAX_PER_IP: ${PUBLIC_RESERVATION_MAX_PER_IP:-5}
+      PUBLIC_RESERVATION_TTL_DAYS: ${PUBLIC_RESERVATION_TTL_DAYS:-7}
+      INBOX_RESERVATION_IP_SALT: ${INBOX_RESERVATION_IP_SALT:-}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      MAIL_SERVER_HOSTNAME: ${MAIL_SERVER_HOSTNAME:-mail.hubify.store}
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-60000}
+      RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-60}
+      API_KEY: ${API_KEY:-}
+      API_RATE_LIMIT_MAX: ${API_RATE_LIMIT_MAX:-5000}
+      MAX_EMAIL_BYTES: ${MAX_EMAIL_BYTES:-1048576}
+      INBOX_LIST_LIMIT: ${INBOX_LIST_LIMIT:-20}
+      PG_POOL_MAX: ${PG_POOL_MAX:-10}
+      PG_IDLE_TIMEOUT_MS: ${PG_IDLE_TIMEOUT_MS:-30000}
+      PG_CONNECTION_TIMEOUT_MS: ${PG_CONNECTION_TIMEOUT_MS:-10000}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_OWNER_ID: ${TELEGRAM_OWNER_ID:-}
+      TELEGRAM_CHANNEL_ID: ${TELEGRAM_CHANNEL_ID:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      replicas: 1
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    image: hubify-mail-web:latest
+    restart: unless-stopped
+    expose:
+      - "80"
+    depends_on:
+      - api
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-hubify_mail}
+      POSTGRES_USER: ${POSTGRES_USER:-hubify}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    # Akses DB dari HOST (dibutuhkan script Postfix di host, Opsi A).
+    # Hostname `db` hanya berlaku di dalam jaringan Docker, jadi pipe
+    # Postfix di host butuh IP/port yang reachable. Opsi termudah: buka
+    # baris ports di bawah (hanya localhost, bukan publik), lalu pakai
+    # DATABASE_URL=postgresql://hubify:<pass>@127.0.0.1:5432/hubify_mail
+    # di postfix/setup-postfix-host.sh. Lihat README bagian 5.
+    # ports:
+    #   - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Fresh install: schema.sql sudah mencakup semua tabel.
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
+      - ./sql/add-names-table.sql:/docker-entrypoint-initdb.d/002_names.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  pgdata:

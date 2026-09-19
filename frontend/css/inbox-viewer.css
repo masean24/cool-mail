@@ -1,0 +1,434 @@
+/* Inbox Viewer - Public page styles */
+
+.inbox-viewer-main {
+  max-width: 640px;
+}
+
+/* ── Countdown Progress Bar ── */
+.refresh-bar-wrap {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.refresh-bar-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-gray-dark);
+}
+
+.refresh-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--color-gray);
+  border: 2px solid var(--color-black);
+  overflow: hidden;
+}
+
+.refresh-bar-fill {
+  height: 100%;
+  background: var(--color-green);
+  transition: width 1s linear;
+  width: 100%;
+}
+
+.refresh-bar-fill.refresh-bar-fill--warning {
+  background: var(--color-orange);
+}
+
+.refresh-bar-fill.refresh-bar-fill--urgent {
+  background: var(--color-red);
+}
+
+/* ── OTP Badge ── */
+.otp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  background: var(--color-yellow);
+  border: 2px solid var(--color-black);
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  animation: otp-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.otp-badge__dot {
+  width: 7px;
+  height: 7px;
+  background: var(--color-black);
+  border-radius: 50%;
+  animation: otp-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes otp-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+}
+
+@keyframes otp-pop {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+/* Highlighted OTP code inside email items */
+.inbox-item--otp {
+  border-color: var(--color-black);
+  background: linear-gradient(135deg, #fff 60%, #FFEC3D22);
+}
+
+.inbox-item--otp:hover {
+  background: var(--color-yellow);
+}
+
+.otp-code-chip {
+  display: inline-block;
+  margin-top: 0.4rem;
+  padding: 0.25rem 0.75rem;
+  background: var(--color-black);
+  color: var(--color-yellow);
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  border: 2px solid var(--color-black);
+  font-variant-numeric: tabular-nums;
+  animation: otp-pop 0.5s 0.1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── Entry animations for inbox items ── */
+@keyframes inbox-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.inbox-item {
+  animation: inbox-slide-in 0.3s ease both;
+}
+
+/* Stagger delay for each item (supports up to 20) */
+.inbox-item:nth-child(1)  { animation-delay: 0.00s; }
+.inbox-item:nth-child(2)  { animation-delay: 0.05s; }
+.inbox-item:nth-child(3)  { animation-delay: 0.10s; }
+.inbox-item:nth-child(4)  { animation-delay: 0.15s; }
+.inbox-item:nth-child(5)  { animation-delay: 0.20s; }
+.inbox-item:nth-child(6)  { animation-delay: 0.25s; }
+.inbox-item:nth-child(7)  { animation-delay: 0.30s; }
+.inbox-item:nth-child(8)  { animation-delay: 0.35s; }
+.inbox-item:nth-child(9)  { animation-delay: 0.40s; }
+.inbox-item:nth-child(10) { animation-delay: 0.45s; }
+.inbox-item:nth-child(11) { animation-delay: 0.50s; }
+.inbox-item:nth-child(12) { animation-delay: 0.55s; }
+.inbox-item:nth-child(13) { animation-delay: 0.60s; }
+.inbox-item:nth-child(14) { animation-delay: 0.65s; }
+.inbox-item:nth-child(15) { animation-delay: 0.70s; }
+.inbox-item:nth-child(16) { animation-delay: 0.75s; }
+.inbox-item:nth-child(17) { animation-delay: 0.80s; }
+.inbox-item:nth-child(18) { animation-delay: 0.85s; }
+.inbox-item:nth-child(19) { animation-delay: 0.90s; }
+.inbox-item:nth-child(20) { animation-delay: 0.95s; }
+
+/* Suppress animation on polling refresh (no re-entry flash) */
+.inbox-item.no-anim {
+  animation: none;
+}
+
+/* New email indicator (item that just arrived) */
+.inbox-item--new {
+  border-left: 5px solid var(--color-green) !important;
+  animation: inbox-slide-in 0.35s ease both, new-flash 0.6s 0.35s ease both;
+}
+
+@keyframes new-flash {
+  0%   { background: var(--color-green); }
+  100% { background: var(--color-white); }
+}
+
+/* Modal close animation */
+.modal.closing {
+  animation: modal-fade-out 0.2s ease forwards;
+}
+
+@keyframes modal-fade-out {
+  to { opacity: 0; }
+}
+
+.modal.active {
+  animation: modal-fade-in 0.2s ease;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.inbox-card {
+  padding: 2rem;
+}
+
+.inbox-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.inbox-card__title {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.inbox-card__label {
+  display: block;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.inbox-card__input {
+  margin-bottom: 1rem;
+}
+
+.inbox-card__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inbox-card__actions .btn {
+  flex: 1;
+}
+
+.inbox-card__info {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 1rem;
+}
+
+.inbox-card__info p {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-black);
+}
+
+/* Result section */
+.inbox-result {
+  margin-top: 2rem;
+  padding: 2rem;
+}
+
+.inbox-result.hidden {
+  display: none;
+}
+
+.inbox-result__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.inbox-result__title {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.inbox-result__email {
+  font-size: 0.85rem;
+  color: var(--color-gray-dark);
+  word-break: break-all;
+  margin: 0;
+}
+
+.inbox-result__loading,
+.inbox-result__empty {
+  padding: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-gray-dark);
+}
+
+.inbox-result__loading.hidden,
+.inbox-result__empty.hidden {
+  display: none;
+}
+
+.inbox-result__empty-hint {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.inbox-result__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.inbox-result__list:empty {
+  display: none;
+}
+
+/* Email items */
+.inbox-item {
+  padding: 1rem;
+  border: var(--border-width) solid var(--color-black);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-black);
+  background: var(--color-white);
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.inbox-item:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0 var(--color-black);
+}
+
+.inbox-item:active {
+  transform: translate(1px, 1px);
+  box-shadow: calc(var(--shadow-offset) - 1px) calc(var(--shadow-offset) - 1px) 0 var(--color-black);
+}
+
+.inbox-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.inbox-item__from {
+  font-size: 0.85rem;
+  color: var(--color-gray-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inbox-item__time {
+  font-size: 0.8rem;
+  color: var(--color-gray-dark);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.inbox-item__subject {
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.inbox-item__preview {
+  font-size: 0.85rem;
+  color: var(--color-gray-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ── Email History Dropdown ── */
+.inbox-card__input-wrap {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.history-dropdown {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  background: var(--color-white);
+  border: var(--border-width) solid var(--color-black);
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-black);
+  z-index: 100;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--color-gray);
+  gap: 0.5rem;
+  transition: background 0.1s;
+}
+
+.history-item:last-child { border-bottom: none; }
+.history-item:hover { background: var(--color-yellow); }
+
+.history-item__email {
+  font-size: 0.875rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-item__remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--color-gray-dark);
+  flex-shrink: 0;
+  padding: 0.1rem 0.3rem;
+  line-height: 1;
+  transition: color 0.1s;
+}
+.history-item__remove:hover { color: var(--color-red); }
+
+/* ── OTP Chip Copied State ── */
+.otp-code-chip {
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.otp-code-chip:hover {
+  background: var(--color-green);
+  color: var(--color-black);
+}
+.otp-code-chip--copied {
+  background: var(--color-green) !important;
+  color: var(--color-black) !important;
+}
+
+/* ── Inbox Search Bar ── */
+.inbox-search-wrap {
+  margin-bottom: 1rem;
+}
+
+.inbox-search__input {
+  font-size: 0.875rem;
+  padding: 0.55rem 0.9rem;
+}
+
+.inbox-search__input::placeholder {
+  font-weight: 400;
+  opacity: 0.6;
+}
